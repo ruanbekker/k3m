@@ -29,3 +29,17 @@ if ! [ -f "${K3M_SSH_PUBLIC_KEY}" ]
     K3M_SSH_PUBLIC_KEY=${K3M_PATH}/ssh_key.pub
     K3M_SSH_PUBLIC_KEY_CONTENT="$(cat ${K3M_SSH_PUBLIC_KEY})"
 fi
+
+# generate cloud-config
+cat > ${K3M_PATH}/${K3M_CLOUD_INIT} << EOF
+#cloud-config
+ssh_authorized_keys:
+  - ${K3M_SSH_PUBLIC_KEY}
+
+package_update: true
+packages:
+ - curl
+
+runcmd:
+- curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -s -
+EOF

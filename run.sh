@@ -43,3 +43,10 @@ packages:
 runcmd:
 - curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -s -
 EOF
+
+# deploy multipass instance with generated cloud-config
+multipass launch ${K3M_INSTANCE_IMAGE} --name ${K3M_INSTANCE_NAME} --cloud-init ${K3M_PATH}/${K3M_CLOUD_INIT}
+
+# get the ipv4 address of the multipass instance
+export K3M_INSTANCE_IP=$(multipass info ${K3M_INSTANCE_NAME} | grep IPv4 | awk '{print $2}')
+

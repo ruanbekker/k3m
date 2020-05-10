@@ -8,7 +8,9 @@ Simplicity of k3s and the speed of multipass, brings you k3m
 
 I really like [Multipass](https://multipass.run) from Canonical and [k3s](https://github.com/rancher/k3s) from Rancher and wanted a one-liner to combine the two together, so that I have a kubernetes development environment running on multipass.
 
-Rancher already makes it so easy to run k3s on its own, and **so many amazing community-developed tools** such as [k3d](https://github.com/rancher/k3d), [kind](https://github.com/kubernetes-sigs/kind), [k3sup](https://github.com/alexellis/k3sup) (and the list goes on) that makes it super easy to get a environment up and running. But since I use multipass heavily, I wanted to create k3m.
+Rancher already makes it so easy to run k3s on its own, and **so many amazing community-developed tools** such as [k3d](https://github.com/rancher/k3d), [kind](https://github.com/kubernetes-sigs/kind), [k3sup](https://github.com/alexellis/k3sup) (and the list goes on) that makes it super easy to get a environment up and running. 
+
+But since I use multipass heavily, I wanted to create k3m.
 
 ## What does it do?
 

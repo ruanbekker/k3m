@@ -34,6 +34,20 @@ When the script runs it:
 - Fetches `/etc/rancher/k3s/k3s.yaml` from the multipass instance, replace the endpoint with the instance ip and save to the local k3m path: `~/.k3m/kubeconfig`
 - Saves the environment details under `~/.k3m/env.sh`
 
+## Requirements
+
+k3m requires multipass, but checks if multipass is not present:
+
+```
+$ curl -sfL get.k3m.run | bash
+
+Multipass is not installed:
+-> https://multipass.run/docs
+
+Linux:   sudo snap install multipass --classic
+MacOS:   brew cask install multipass
+```
+
 ## Usage
 
 Deploy k3m:

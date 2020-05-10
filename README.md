@@ -18,6 +18,8 @@ Get a k3s cluster on multipass with:
 
 ```
 $ curl -sfL get.k3m.run | bash
+```
+```
 $ export KUBECONFIG=~/.k3m/kubeconfig
 $ kubectl get nodes -o wide
 NAME   STATUS   ROLES    AGE   VERSION        INTERNAL-IP     EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME

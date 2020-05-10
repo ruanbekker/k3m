@@ -60,6 +60,7 @@ multipass launch ${K3M_INSTANCE_IMAGE} --name ${K3M_INSTANCE_NAME} --cloud-init 
 
 # get the ipv4 address of the multipass instance
 export K3M_INSTANCE_IP=$(multipass info ${K3M_INSTANCE_NAME} | grep IPv4 | awk '{print $2}')
+export K3M_INSTANCE_USER=$(multipass exec ${K3M_INSTANCE_NAME} -- whoami)
 
 # wait until the kubernetes port is listening
 while [ "${EXIT_CODE}" != 0 ]
@@ -86,7 +87,12 @@ echo "---------------------"
 echo "export KUBECONFIG=${K3M_PATH}/kubeconfig"
 echo "kubectl get nodes -o wide"
 echo ""
+echo "If you don't have kubectl installed:"
+echo "-----------------------------"
+echo "alias kubectl=\"multipass exec ${K3M_INSTANCE_NAME} -- kubectl\""
+echo "kubectl get nodes -o wide"
+echo ""
 echo "To SSH to your multipass instance:"
 echo "----------------------------------"
-echo "ssh -i ${K3M_SSH_PRIVATE_KEY} multipass@${K3M_INSTANCE_IP}"
+echo "ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -i ${K3M_SSH_PRIVATE_KEY} ${K3M_INSTANCE_USER}@${K3M_INSTANCE_IP}"
 echo ""

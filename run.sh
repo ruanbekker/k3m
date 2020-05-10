@@ -60,3 +60,18 @@ while [ "${EXIT_CODE}" != 0 ]
 # get the kubeconfig from the multipass instance, replace the localhost ip with the multipass ipv4 address and save to k3m path locally
 multipass exec ${K3M_INSTANCE_NAME} -- sed "s/127.0.0.1/${K3M_INSTANCE_IP}/g" /etc/rancher/k3s/k3s.yaml > ${K3M_PATH}/kubeconfig
 
+# print post install info
+cat << "EOF"
+
+   __    ____
+  / /__ |_  /__ _
+ /  '_/_/_ </  ' \
+/_/\_\/____/_/_/_/
+
+EOF
+
+echo "To activate:"
+echo "------------"
+echo "export KUBECONFIG=${K3M_PATH}/kubeconfig"
+echo "kubectl get nodes -o wide"
+echo ""

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -x
 # is multipass installed?
 which multipass  &> /dev/null && MULTIPASS_EXIT_CODE=${?} || MULTIPASS_EXIT_CODE=${?}
 if [ "${MULTIPASS_EXIT_CODE}" == 1 ]
@@ -57,6 +57,7 @@ EOF
 
 # deploy multipass instance with generated cloud-config
 multipass launch ${K3M_INSTANCE_IMAGE} --name ${K3M_INSTANCE_NAME} --cloud-init ${K3M_PATH}/${K3M_CLOUD_INIT}
+echo "done launching"
 
 # get the ipv4 address of the multipass instance
 export K3M_INSTANCE_IP=$(multipass info ${K3M_INSTANCE_NAME} | grep IPv4 | awk '{print $2}')
@@ -71,7 +72,8 @@ while [ "${EXIT_CODE}" != 0 ]
 
 # get the kubeconfig from the multipass instance, replace the localhost ip with the multipass ipv4 address and save to k3m path locally
 multipass exec ${K3M_INSTANCE_NAME} -- sed "s/127.0.0.1/${K3M_INSTANCE_IP}/g" /etc/rancher/k3s/k3s.yaml > ${K3M_PATH}/kubeconfig
-
+echo "done writing"
+sleep 2
 # print post install info
 #cat << "EOF"
 #
@@ -96,7 +98,8 @@ multipass exec ${K3M_INSTANCE_NAME} -- sed "s/127.0.0.1/${K3M_INSTANCE_IP}/g" /e
 #echo "----------------------------------"
 #echo "ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -i ${K3M_SSH_PRIVATE_KEY} ${K3M_INSTANCE_USER}@${K3M_INSTANCE_IP}"
 #echo ""
-
+echo "begin to write"
+sleep 2
 echo "" > ${K3M_PATH}/banner 
 echo "    __    ____      " >> ${K3M_PATH}/banner
 echo "   / /__ |_  /__ _  " >> ${K3M_PATH}/banner
@@ -123,3 +126,4 @@ kubectl get nodes -o wide
 " >> ${K3M_PATH}/banner
 
 cat ${K3M_PATH}/banner
+echo "finish"

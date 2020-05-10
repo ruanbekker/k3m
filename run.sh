@@ -4,8 +4,13 @@
 which multipass  &> /dev/null && MULTIPASS_EXIT_CODE=${?} || MULTIPASS_EXIT_CODE=${?}
 if [ "${MULTIPASS_EXIT_CODE}" == 1 ]
 then
+  echo ""
   echo "Multipass is not installed:"
-  echo "https://multipass.run/docs"
+  echo "-> https://multipass.run/docs"
+  echo ""
+  echo "Linux:   sudo snap install multipass --classic"
+  echo "MacOS:   brew cask install multipass"
+  echo "Windows: choco install multipass"
   exit 1
 fi
 

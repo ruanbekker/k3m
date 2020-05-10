@@ -50,3 +50,13 @@ multipass launch ${K3M_INSTANCE_IMAGE} --name ${K3M_INSTANCE_NAME} --cloud-init 
 # get the ipv4 address of the multipass instance
 export K3M_INSTANCE_IP=$(multipass info ${K3M_INSTANCE_NAME} | grep IPv4 | awk '{print $2}')
 
+# wait until the kubernetes port is listening
+while [ "${EXIT_CODE}" != 0 ]
+  do
+    sleep 1
+    nc -vz -w1 ${K3M_INSTANCE_IP} 6443 &> /dev/null && EXIT_CODE=${?} || EXIT_CODE=${?}
+  done
+
+# get the kubeconfig from the multipass instance, replace the localhost ip with the multipass ipv4 address and save to k3m path locally
+multipass exec ${K3M_INSTANCE_NAME} -- sed "s/127.0.0.1/${K3M_INSTANCE_IP}/g" /etc/rancher/k3s/k3s.yaml > ${K3M_PATH}/kubeconfig
+

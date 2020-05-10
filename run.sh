@@ -94,7 +94,8 @@ echo "export K3M_INSTANCE_USER=${K3M_INSTANCE_USER}" >> ${K3M_ENVIRONMENT_FILE}
 echo "export K3M_INSTANCE_NAME=${K3M_INSTANCE_NAME}" >> ${K3M_ENVIRONMENT_FILE}
 echo "export K3M_CLOUD_INIT=${K3M_PATH}/${K3M_CLOUD_INIT}" >> ${K3M_ENVIRONMENT_FILE}
 echo "export K3M_SSH_PRIVATE_KEY=${K3M_SSH_PRIVATE_KEY}" >> ${K3M_ENVIRONMENT_FILE}
-echo alias k3m=\"multipass exec ${K3M_INSTANCE_NAME} -- \${1}\" >> ${K3M_ENVIRONMENT_FILE}
+echo alias k3m=\"multipass exec ${K3M_INSTANCE_NAME} -- $\{1}\" >> ${K3M_ENVIRONMENT_FILE}
+echo alias k3m-delete=\"multipass delete --purge ${K3M_INSTANCE_NAME}\" >> ${K3M_ENVIRONMENT_FILE}
 
 # write banner info to file
 echo "Writing the banner info to ${K3M_PATH}/banner"
@@ -121,6 +122,10 @@ If you don't have kubectl installed:
 -----------------------------------
 source ${K3M_ENVIRONMENT_FILE}
 k3m kubectl get nodes -o wide
+
+To destroy the environment:
+---------------------------
+k3m delete
 " >> ${K3M_PATH}/banner
 
 echo "Deployment completed"

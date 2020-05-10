@@ -10,13 +10,13 @@ then
   echo ""
   echo "Linux:   sudo snap install multipass --classic"
   echo "MacOS:   brew cask install multipass"
-  echo "Windows: choco install multipass"
   echo ""
   exit 1
 fi
 
 # global environment variables
 K3M_PATH=~/.k3m
+K3M_INSTANCE_USER="ubuntu"
 K3M_INSTANCE_IMAGE="bionic"
 K3M_INSTANCE_NAME="k3s"
 K3M_CLOUD_INIT="cloud-init-k3s.yml"
@@ -61,7 +61,6 @@ echo "done launching"
 
 # get the ipv4 address of the multipass instance
 export K3M_INSTANCE_IP=$(multipass info ${K3M_INSTANCE_NAME} | grep IPv4 | awk '{print $2}')
-export K3M_INSTANCE_USER=$(multipass exec ${K3M_INSTANCE_NAME} -- whoami)
 
 # wait until the kubernetes port is listening
 while [ "${EXIT_CODE}" != 0 ]
@@ -71,36 +70,10 @@ while [ "${EXIT_CODE}" != 0 ]
   done
 
 # get the kubeconfig from the multipass instance, replace the localhost ip with the multipass ipv4 address and save to k3m path locally
-multipass exec ${K3M_INSTANCE_NAME} -- sed "s/127.0.0.1/${K3M_INSTANCE_IP}/g" /etc/rancher/k3s/k3s.yaml > ${K3M_PATH}/kubeconfig
-echo "done writing"
-sleep 2
-# print post install info
-#cat << "EOF"
-#
-#   __    ____
-#  / /__ |_  /__ _
-# /  '_/_/_ </  ' \
-#/_/\_\/____/_/_/_/
-#
-#EOF
+multipass transfer ${K3M_INSTANCE_NAME}:/etc/rancher/k3s/k3s.yaml ${K3M_PATH}/kubeconfig
+sed -i '' "s/127.0.0.1/${K3M_INSTANCE_IP}/g" ${K3M_PATH}/kubeconfig
 
-#echo "To access kubernetes:"
-#echo "---------------------"
-#echo "export KUBECONFIG=${K3M_PATH}/kubeconfig"
-#echo "kubectl get nodes -o wide"
-#echo ""
-#echo "If you don't have kubectl installed:"
-#echo "-----------------------------"
-#echo "alias kubectl=\"multipass exec ${K3M_INSTANCE_NAME} -- kubectl\""
-#echo "kubectl get nodes -o wide"
-#echo ""
-#echo "To SSH to your multipass instance:"
-#echo "----------------------------------"
-#echo "ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -i ${K3M_SSH_PRIVATE_KEY} ${K3M_INSTANCE_USER}@${K3M_INSTANCE_IP}"
-#echo ""
-echo "begin to write"
-sleep 2
-echo "" > ${K3M_PATH}/banner 
+echo "" > ${K3M_PATH}/banner
 echo "    __    ____      " >> ${K3M_PATH}/banner
 echo "   / /__ |_  /__ _  " >> ${K3M_PATH}/banner
 echo "  /  '_/_/_ </  ' \ " >> ${K3M_PATH}/banner
@@ -108,7 +81,6 @@ echo " /_/\_\/____/_/_/_/ " >> ${K3M_PATH}/banner
 echo "" >> ${K3M_PATH}/banner
 
 echo "
-
 To access kubernetes:
 ---------------------
 export KUBECONFIG=${K3M_PATH}/kubeconfig
@@ -122,8 +94,6 @@ Dont have kubectl installed?
 ---------------------------
 alias kctl=\"multipass exec ${K3M_INSTANCE_NAME} -- kubectl\"
 kubectl get nodes -o wide
-
 " >> ${K3M_PATH}/banner
 
 cat ${K3M_PATH}/banner
-echo "finish"

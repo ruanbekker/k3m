@@ -125,7 +125,7 @@ k3m kubectl get nodes -o wide
 
 To destroy the environment:
 ---------------------------
-k3m delete
+k3m-delete
 " >> ${K3M_PATH}/banner
 
 echo "Deployment completed"

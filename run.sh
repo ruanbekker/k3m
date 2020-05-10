@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -x
+
 # is multipass installed?
 which multipass  &> /dev/null && MULTIPASS_EXIT_CODE=${?} || MULTIPASS_EXIT_CODE=${?}
 if [ "${MULTIPASS_EXIT_CODE}" == 1 ]
@@ -18,10 +18,11 @@ fi
 K3M_PATH=~/.k3m
 K3M_INSTANCE_USER="ubuntu"
 K3M_INSTANCE_IMAGE="bionic"
-K3M_INSTANCE_NAME="k3s"
-K3M_CLOUD_INIT="cloud-init-k3s.yml"
+K3M_INSTANCE_NAME="k3m"
+K3M_CLOUD_INIT="cloud-init-k3m.yml"
 K3M_SSH_PRIVATE_KEY=~/.ssh/id_rsa
 K3M_SSH_PUBLIC_KEY=${K3M_SSH_PRIVATE_KEY}.pub
+K3M_ENVIRONMENT_FILE=${K3M_SSH_PRIVATE_KEY}/env.sh
 
 # create k3m home directory
 mkdir -p ${K3M_PATH}
@@ -73,6 +74,16 @@ while [ "${EXIT_CODE}" != 0 ]
 multipass transfer ${K3M_INSTANCE_NAME}:/etc/rancher/k3s/k3s.yaml ${K3M_PATH}/kubeconfig
 sed -i '' "s/127.0.0.1/${K3M_INSTANCE_IP}/g" ${K3M_PATH}/kubeconfig
 
+# save env vars to file
+echo "export K3M_PATH=${K3M_PATH}" > ${K3M_ENVIRONMENT_FILE}
+echo "export K3M_INSTANCE_USER=${K3M_INSTANCE_USER}" >> ${K3M_ENVIRONMENT_FILE}
+echo "export K3M_INSTANCE_IMAGE=${K3M_INSTANCE_IMAGE}" >> ${K3M_ENVIRONMENT_FILE}
+echo "export K3M_INSTANCE_NAME=${K3M_INSTANCE_NAME}" >> ${K3M_ENVIRONMENT_FILE}
+echo "export K3M_CLOUD_INIT=${K3M_CLOUD_INIT}" >> ${K3M_ENVIRONMENT_FILE}
+echo "export K3M_SSH_PRIVATE_KEY=${K3M_SSH_PRIVATE_KEY}" >> ${K3M_ENVIRONMENT_FILE}
+echo "export K3M_SSH_PUBLIC_KEY=${K3M_SSH_PUBLIC_KEY}" >> ${K3M_ENVIRONMENT_FILE}
+
+# write banner info to file
 echo "" > ${K3M_PATH}/banner
 echo "    __    ____      " >> ${K3M_PATH}/banner
 echo "   / /__ |_  /__ _  " >> ${K3M_PATH}/banner
@@ -81,19 +92,19 @@ echo " /_/\_\/____/_/_/_/ " >> ${K3M_PATH}/banner
 echo "" >> ${K3M_PATH}/banner
 
 echo "
-To access kubernetes:
+To access Kubernetes:
 ---------------------
 export KUBECONFIG=${K3M_PATH}/kubeconfig
 kubectl get nodes -o wide
 
-To SSH to your multipass instance:
+To SSH to your Multipass Instance:
 ---------------------------------
 ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -i ${K3M_SSH_PRIVATE_KEY} ubuntu@${K3M_INSTANCE_IP}
 
-Dont have kubectl installed?
----------------------------
-alias kctl=\"multipass exec ${K3M_INSTANCE_NAME} -- kubectl\"
-kubectl get nodes -o wide
+If you don't have kubectl installed:
+-----------------------------------
+source ${K3M_ENVIRONMENT_FILE}
+k3m kubectl get nodes -o wide
 " >> ${K3M_PATH}/banner
 
 cat ${K3M_PATH}/banner

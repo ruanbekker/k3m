@@ -56,10 +56,23 @@ runcmd:
 - curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -s -
 EOF
 
+cat << "EOF"
+
+    __    ____
+   / /__ |_  /__ _
+  /  '_/_/_ </  ' \
+ /_/\_\/____/_/_/_/
+
+      -- multipass + k3s = <3
+
+EOF
+
 # deploy multipass instance with generated cloud-config
+echo "Deploying Multipass Instance"
 multipass launch ${K3M_INSTANCE_IMAGE} --name ${K3M_INSTANCE_NAME} --cloud-init ${K3M_PATH}/${K3M_CLOUD_INIT}
 
 # get the ipv4 address of the multipass instance
+echo "Getting the IPv4 Address of ${K3M_INSTANCE_NAME}"
 export K3M_INSTANCE_IP=$(multipass info ${K3M_INSTANCE_NAME} | grep IPv4 | awk '{print $2}')
 
 # wait until the kubernetes port is listening
@@ -70,18 +83,24 @@ while [ "${EXIT_CODE}" != 0 ]
   done
 
 # get the kubeconfig from the multipass instance, replace the localhost ip with the multipass ipv4 address and save to k3m path locally
+echo "Writing the kubeconfig to ${K3M_PATH}/kubeconfig"
 multipass transfer ${K3M_INSTANCE_NAME}:/etc/rancher/k3s/k3s.yaml ${K3M_PATH}/kubeconfig
 sed -i '' "s/127.0.0.1/${K3M_INSTANCE_IP}/g" ${K3M_PATH}/kubeconfig
 
 # save env vars to file
+echo "Writing the environment file to ${K3M_ENVIRONMENT_FILE}"
 echo "export K3M_PATH=${K3M_PATH}" > ${K3M_ENVIRONMENT_FILE}
 echo "export K3M_INSTANCE_USER=${K3M_INSTANCE_USER}" >> ${K3M_ENVIRONMENT_FILE}
 echo "export K3M_INSTANCE_NAME=${K3M_INSTANCE_NAME}" >> ${K3M_ENVIRONMENT_FILE}
 echo "export K3M_CLOUD_INIT=${K3M_PATH}/${K3M_CLOUD_INIT}" >> ${K3M_ENVIRONMENT_FILE}
 echo "export K3M_SSH_PRIVATE_KEY=${K3M_SSH_PRIVATE_KEY}" >> ${K3M_ENVIRONMENT_FILE}
+echo alias k3m=\"multipass exec ${K3M_INSTANCE_NAME} -- \${1}\" >> ${K3M_ENVIRONMENT_FILE}
 
 # write banner info to file
+echo "Writing the banner info to ${K3M_PATH}/banner"
 echo "" > ${K3M_PATH}/banner
+echo "Welcome to:" >> ${K3M_PATH}/banner
+echo "" >> ${K3M_PATH}/banner
 echo "    __    ____      " >> ${K3M_PATH}/banner
 echo "   / /__ |_  /__ _  " >> ${K3M_PATH}/banner
 echo "  /  '_/_/_ </  ' \ " >> ${K3M_PATH}/banner
@@ -103,5 +122,9 @@ If you don't have kubectl installed:
 source ${K3M_ENVIRONMENT_FILE}
 k3m kubectl get nodes -o wide
 " >> ${K3M_PATH}/banner
+
+echo "Deployment completed"
+echo ""
+sleep 1
 
 cat ${K3M_PATH}/banner

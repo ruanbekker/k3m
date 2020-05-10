@@ -73,26 +73,53 @@ while [ "${EXIT_CODE}" != 0 ]
 multipass exec ${K3M_INSTANCE_NAME} -- sed "s/127.0.0.1/${K3M_INSTANCE_IP}/g" /etc/rancher/k3s/k3s.yaml > ${K3M_PATH}/kubeconfig
 
 # print post install info
-cat << "EOF"
+#cat << "EOF"
+#
+#   __    ____
+#  / /__ |_  /__ _
+# /  '_/_/_ </  ' \
+#/_/\_\/____/_/_/_/
+#
+#EOF
 
-   __    ____
-  / /__ |_  /__ _
- /  '_/_/_ </  ' \
-/_/\_\/____/_/_/_/
+#echo "To access kubernetes:"
+#echo "---------------------"
+#echo "export KUBECONFIG=${K3M_PATH}/kubeconfig"
+#echo "kubectl get nodes -o wide"
+#echo ""
+#echo "If you don't have kubectl installed:"
+#echo "-----------------------------"
+#echo "alias kubectl=\"multipass exec ${K3M_INSTANCE_NAME} -- kubectl\""
+#echo "kubectl get nodes -o wide"
+#echo ""
+#echo "To SSH to your multipass instance:"
+#echo "----------------------------------"
+#echo "ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -i ${K3M_SSH_PRIVATE_KEY} ${K3M_INSTANCE_USER}@${K3M_INSTANCE_IP}"
+#echo ""
 
-EOF
+echo "" > ${K3M_PATH}/banner 
+echo "    __    ____      " >> ${K3M_PATH}/banner
+echo "   / /__ |_  /__ _  " >> ${K3M_PATH}/banner
+echo "  /  '_/_/_ </  ' \ " >> ${K3M_PATH}/banner
+echo " /_/\_\/____/_/_/_/ " >> ${K3M_PATH}/banner
+echo "" >> ${K3M_PATH}/banner
 
-echo "To access kubernetes:"
-echo "---------------------"
-echo "export KUBECONFIG=${K3M_PATH}/kubeconfig"
-echo "kubectl get nodes -o wide"
-echo ""
-echo "If you don't have kubectl installed:"
-echo "-----------------------------"
-echo "alias kubectl=\"multipass exec ${K3M_INSTANCE_NAME} -- kubectl\""
-echo "kubectl get nodes -o wide"
-echo ""
-echo "To SSH to your multipass instance:"
-echo "----------------------------------"
-echo "ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -i ${K3M_SSH_PRIVATE_KEY} ${K3M_INSTANCE_USER}@${K3M_INSTANCE_IP}"
-echo ""
+echo "
+
+To access kubernetes:
+---------------------
+export KUBECONFIG=${K3M_PATH}/kubeconfig
+kubectl get nodes -o wide
+
+To SSH to your multipass instance:
+---------------------------------
+ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -i ${K3M_SSH_PRIVATE_KEY} ubuntu@${K3M_INSTANCE_IP}
+
+Dont have kubectl installed?
+---------------------------
+alias kctl=\"multipass exec ${K3M_INSTANCE_NAME} -- kubectl\"
+kubectl get nodes -o wide
+
+" >> ${K3M_PATH}/banner
+
+cat ${K3M_PATH}/banner

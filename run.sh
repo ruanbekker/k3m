@@ -11,6 +11,7 @@ then
   echo "Linux:   sudo snap install multipass --classic"
   echo "MacOS:   brew cask install multipass"
   echo "Windows: choco install multipass"
+  echo ""
   exit 1
 fi
 
@@ -19,19 +20,24 @@ K3M_PATH=~/.k3m
 K3M_INSTANCE_IMAGE="bionic"
 K3M_INSTANCE_NAME="k3s"
 K3M_CLOUD_INIT="cloud-init-k3s.yml"
-K3M_SSH_PUBLIC_KEY=~/.ssh/id_rsa.pub
-K3M_SSH_PUBLIC_KEY_CONTENT="$(cat ${K3M_SSH_PUBLIC_KEY})"
+K3M_SSH_PRIVATE_KEY=~/.ssh/id_rsa
+K3M_SSH_PUBLIC_KEY=${K3M_SSH_PRIVATE_KEY}.pub
 
 # create k3m home directory
 mkdir -p ${K3M_PATH}
 
 # check if specified public key exists
-if ! [ -f "${K3M_SSH_PUBLIC_KEY}" ] 
-  then 
-    # create key
+if [ -f "${K3M_SSH_PUBLIC_KEY}" ]
+  then
+    # key exists, read content
+    K3M_SSH_PUBLIC_KEY_CONTENT="$(cat ${K3M_SSH_PUBLIC_KEY})"
+
+  else 
+    # key does not exist, create key
     echo "Specified key does not exist, creating ssh key ~/.k3m/ssh_key"
     ssh-keygen -b 2048 -f ${K3M_PATH}/ssh_key -t rsa -C "k3m" -q -N ""
-    K3M_SSH_PUBLIC_KEY=${K3M_PATH}/ssh_key.pub
+    K3M_SSH_PRIVATE_KEY=${K3M_PATH}/ssh_key
+    K3M_SSH_PUBLIC_KEY=${K3M_SSH_PRIVATE_KEY}.pub
     K3M_SSH_PUBLIC_KEY_CONTENT="$(cat ${K3M_SSH_PUBLIC_KEY})"
 fi
 
@@ -39,7 +45,7 @@ fi
 cat > ${K3M_PATH}/${K3M_CLOUD_INIT} << EOF
 #cloud-config
 ssh_authorized_keys:
-  - ${K3M_SSH_PUBLIC_KEY}
+  - ${K3M_SSH_PUBLIC_KEY_CONTENT}
 
 package_update: true
 packages:
@@ -75,8 +81,12 @@ cat << "EOF"
 
 EOF
 
-echo "To activate:"
-echo "------------"
+echo "To access kubernetes:"
+echo "---------------------"
 echo "export KUBECONFIG=${K3M_PATH}/kubeconfig"
 echo "kubectl get nodes -o wide"
+echo ""
+echo "To SSH to your multipass instance:"
+echo "----------------------------------"
+echo "ssh -i ${K3M_SSH_PRIVATE_KEY} multipass@${K3M_INSTANCE_IP}"
 echo ""

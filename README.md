@@ -95,7 +95,7 @@ $ export KUBECONFIG=/Users/ruan/.k3m/kubeconfig
 $ kubectl get nodes -o wide
 NAME   STATUS   ROLES    AGE   VERSION        INTERNAL-IP     EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
 k3m    Ready    master   29s   v1.17.4+k3s1   192.168.64.15   <none>        Ubuntu 18.04.4 LTS   4.15.0-99-generic   containerd://1.3.3-k3s2
-``
+```
 
 To ssh to your k3m multipass instance:
 

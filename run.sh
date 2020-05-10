@@ -58,7 +58,6 @@ EOF
 
 # deploy multipass instance with generated cloud-config
 multipass launch ${K3M_INSTANCE_IMAGE} --name ${K3M_INSTANCE_NAME} --cloud-init ${K3M_PATH}/${K3M_CLOUD_INIT}
-echo "done launching"
 
 # get the ipv4 address of the multipass instance
 export K3M_INSTANCE_IP=$(multipass info ${K3M_INSTANCE_NAME} | grep IPv4 | awk '{print $2}')
@@ -77,11 +76,9 @@ sed -i '' "s/127.0.0.1/${K3M_INSTANCE_IP}/g" ${K3M_PATH}/kubeconfig
 # save env vars to file
 echo "export K3M_PATH=${K3M_PATH}" > ${K3M_ENVIRONMENT_FILE}
 echo "export K3M_INSTANCE_USER=${K3M_INSTANCE_USER}" >> ${K3M_ENVIRONMENT_FILE}
-echo "export K3M_INSTANCE_IMAGE=${K3M_INSTANCE_IMAGE}" >> ${K3M_ENVIRONMENT_FILE}
 echo "export K3M_INSTANCE_NAME=${K3M_INSTANCE_NAME}" >> ${K3M_ENVIRONMENT_FILE}
-echo "export K3M_CLOUD_INIT=${K3M_CLOUD_INIT}" >> ${K3M_ENVIRONMENT_FILE}
+echo "export K3M_CLOUD_INIT=${K3M_PATH}/${K3M_CLOUD_INIT}" >> ${K3M_ENVIRONMENT_FILE}
 echo "export K3M_SSH_PRIVATE_KEY=${K3M_SSH_PRIVATE_KEY}" >> ${K3M_ENVIRONMENT_FILE}
-echo "export K3M_SSH_PUBLIC_KEY=${K3M_SSH_PUBLIC_KEY}" >> ${K3M_ENVIRONMENT_FILE}
 
 # write banner info to file
 echo "" > ${K3M_PATH}/banner

@@ -22,7 +22,7 @@ K3M_INSTANCE_NAME="k3m"
 K3M_CLOUD_INIT="cloud-init-k3m.yml"
 K3M_SSH_PRIVATE_KEY=~/.ssh/id_rsa
 K3M_SSH_PUBLIC_KEY=${K3M_SSH_PRIVATE_KEY}.pub
-K3M_ENVIRONMENT_FILE=${K3M_SSH_PRIVATE_KEY}/env.sh
+K3M_ENVIRONMENT_FILE=${K3M_PATH}/env.sh
 
 # create k3m home directory
 mkdir -p ${K3M_PATH}

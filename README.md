@@ -81,7 +81,7 @@ k3m kubectl get nodes -o wide
 
 To destroy the environment:
 ---------------------------
-k3m delete
+k3m-delete
 ```
 
 If you have kubectl installed access k3s with:
